@@ -44,9 +44,12 @@ ${cloudinit_runcmd_common}
 %{if private_network_only~}
 # Private-only setup: detect the private interface dynamically
 - |
-  PRIV_IF=$(ip -4 route get '${network_gw_ipv4}' 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}')
+  route_dev() {
+    awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}'
+  }
+  PRIV_IF=$(ip -4 route get '${network_gw_ipv4}' 2>/dev/null | route_dev)
   if [ -z "$PRIV_IF" ]; then
-    PRIV_IF=$(ip -4 route show scope link 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}')
+    PRIV_IF=$(ip -4 route show scope link 2>/dev/null | route_dev)
   fi
   if [ -n "$PRIV_IF" ]; then
     ip route replace default via '${network_gw_ipv4}' dev "$PRIV_IF" metric 100
