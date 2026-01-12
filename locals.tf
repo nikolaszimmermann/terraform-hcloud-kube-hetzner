@@ -1371,3 +1371,10 @@ check "nat_router_requires_control_plane_lb" {
     error_message = "When nat_router is enabled, use_control_plane_lb must be set to true."
   }
 }
+
+check "ccm_lb_has_eligible_targets" {
+  assert {
+    condition     = !(var.exclude_agents_from_external_load_balancers && !local.allow_loadbalancer_target_on_control_plane)
+    error_message = "Warning: exclude_agents_from_external_load_balancers=true with allow_scheduling_on_control_plane=false leaves NO eligible targets for CCM-managed LoadBalancer services. Either set allow_scheduling_on_control_plane=true or disable exclude_agents_from_external_load_balancers."
+  }
+}

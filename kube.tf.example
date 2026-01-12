@@ -629,6 +629,11 @@ module "kube-hetzner" {
   # True by default for single node clusters, and when enable_klipper_metal_lb is true. In those cases, the value below will be ignored.
   # allow_scheduling_on_control_plane = true
 
+  # If you use both the Terraform-managed ingress LB AND CCM-managed LoadBalancer services, agents get registered to both.
+  # Enable this to exclude agents from CCM LBs (adds node.kubernetes.io/exclude-from-external-load-balancers=true label).
+  # WARNING: If allow_scheduling_on_control_plane=false, this leaves NO eligible targets for CCM LoadBalancer services.
+  # exclude_agents_from_external_load_balancers = true
+
   # If you want to disable the automatic upgrade of k3s, you can set below to "false".
   # Ideally, keep it on, to always have the latest Kubernetes version, but lock the initial_k3s_channel to a kube major version,
   # of your choice, like v1.25 or v1.26. That way you get the best of both worlds without the breaking changes risk.
