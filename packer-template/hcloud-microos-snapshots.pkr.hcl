@@ -67,6 +67,10 @@ locals {
     zypper addlock kernel-default
     # Regenerate GRUB config with only kernel-longterm entries
     grub2-mkconfig -o /boot/grub2/grub.cfg
+    # Reserve 1GB for kernel operations to prevent OOM lockups with btrfs,
+    # and configure swapping as last resort
+    echo 'vm.min_free_kbytes = 1048576' > /etc/sysctl.d/99-oom-tuning.conf
+    echo 'vm.swappiness = 10' >> /etc/sysctl.d/99-oom-tuning.conf
     EOF
     sleep 1 && udevadm settle && reboot
   EOT
