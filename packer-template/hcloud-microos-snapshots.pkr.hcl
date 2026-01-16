@@ -52,6 +52,12 @@ variable "sysctl_config_file" {
   default = ""
 }
 
+# Timezone to set on the snapshot (e.g., "Europe/Madrid", "UTC", "America/New_York")
+variable "timezone" {
+  type    = string
+  default = "UTC"
+}
+
 locals {
   # Only install kernel-longterm if selected; kernel-default is already in the base image
   kernel_package_list = var.kernel_type == "longterm" ? ["kernel-longterm"] : []
@@ -107,6 +113,8 @@ locals {
     rm -rf /etc/ssh/ssh_host_*
     echo "Make sure to use NetworkManager"
     touch /etc/NetworkManager/NetworkManager.conf
+    echo "Setting timezone to '${var.timezone}'..."
+    timedatectl set-timezone '${var.timezone}'
     sleep 1 && udevadm settle
   EOT
 }
